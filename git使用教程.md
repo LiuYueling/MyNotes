@@ -140,4 +140,108 @@ $ git reset --hard 版本号
 
 ### 7. 远程仓库
 
+#### 7.1. 生成密钥
+
+* 第一步，检查是否已经生成key
+
+  打开 git bash，输入
+
+  ```bash
+  ls -al ~/.ssh
+  ```
+
+  如果能进入到 .ssh 目录下，则之前已经生成过 .ssh 密钥，可以直接使用里面的密钥。
+
+* 第二步，如果不能进入到 .ssh 目录，则需要生成 SSH 密钥
+
+  1. 检查 user.name 和 user.email 配置
+
+     ```bash
+     git config user.name
+     git config user.email
+     ```
+
+     如果没有配置，则需要创建
+
+  2. 创建 user.name 和 user.email
+
+     ```bash
+     git config -global user.name "xxx"
+     git config -global user.email "xxx@xxx.xxx"
+     ```
+
+  3. 生成密钥
+
+     ```bash
+     ssh-keygen -t rsa -C "<user.email>"
+     ```
+
+     代码参数含义：
+
+     -t 指定密钥类型，默认是 rsa ，可以省略；
+
+     -C 设置注释文字，比如邮箱；
+
+     -f 指定密钥文件存储文件名。
+
+     
+
+     接着按3个回车，
+
+     ```bash
+     [root@localhost ~]# ssh-keygen -t rsa       #<== 建立密钥对，-t代表类型，有RSA和DSA两种
+     Generating public/private rsa key pair.
+     Enter file in which to save the key (/root/.ssh/id_rsa):   #<==密钥文件默认存放位置，按Enter即可
+     Created directory '/root/.ssh'.
+     Enter passphrase (empty for no passphrase):     #<== 输入密钥锁码，或直接按 Enter 留空
+     Enter same passphrase again:     #<== 再输入一遍密钥锁码
+     Your identification has been saved in /root/.ssh/id_rsa.    #<== 生成的私钥
+     Your public key has been saved in /root/.ssh/id_rsa.pub.    #<== 生成的公钥
+     The key fingerprint is:
+     SHA256:K1qy928tkk1FUuzQtlZK+poeS67vIgPvHw9lQ+KNuZ4 root@localhost.localdomain
+     The key's randomart image is:
+     +---[RSA 2048]----+
+     |           +.    |
+     |          o * .  |
+     |        . .O +   |
+     |       . *. *    |
+     |        S =+     |
+     |    .    =...    |
+     |    .oo =+o+     |
+     |     ==o+B*o.    |
+     |    oo.=EXO.     |
+     +----[SHA256]-----+
+     
+     ```
+
+     在 .ssh 目录下得到了两个文件： id_rsa (私有密钥) 和 id_rsa.pub (共有密钥) 。
+
+
+
+#### 7.2. GitHub 添加密钥
+
+1. 登录 GitHub ，进入 setings
+2. 在personal setings ，点击进入 SSH and GPG key
+3. 创建 New SSH key
+4. 在 key 输入框中添加你的 id_rsa.pub 密钥；Title 标题可以自己定义，方便标识。
+5. 点击 Add SSH key；
+6. 在弹出窗口，输入你的 GitHub 密码，点击确认按钮。
+
+到此 GitHub SSH密钥 添加完成
+
+
+
+#### 7.3. GitHub 测试
+
+在 git bash 中输入
+
+```bash
+ssh -T git@github.com
+```
+
+会让你保存 RSA key，输入 yes 即可。
+
+
+
+
 
