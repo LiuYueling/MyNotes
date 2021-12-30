@@ -1,4 +1,4 @@
-# MyNodes
+# MyNotes
 笔记目录:
 
 [git使用教程.md](./git使用教程.md)
