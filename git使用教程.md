@@ -115,7 +115,7 @@ Git 版本回退有两种方法：
 
 1. 直接更改文件，然后 add 添加到暂存区，最后 commit 掉；
 2. 使用 `git reset -- hard HEAD^` 直接恢复到上一个版本。
-3. 使用 `git checkout -- \<file\>` 直接丢弃工作区的修改
+3. 使用 `git checkout -- <file>` 直接丢弃工作区的修改
 4. 使用 `git restore` 丢弃工作区（建议使用）
 
 
@@ -243,3 +243,126 @@ ssh -T git@github.com
 
 会让你保存 RSA key，输入 yes 即可。
 
+
+
+### 8. 创建与合并分支
+
+每一次提交 git 都把他们串成一条时间线，这一条时间线就是一个分支。
+
+截至目前，只有一条时间线，在 git 里，这条分支叫**主分支**，及master分支。
+
+HEAD 严格来说不是指向提交，而是指向 master ，master 才是指向提交，HEAD 指向的就是当前分支。
+
+
+
+首先我们创建 dev 分支，然后切换到dev分支上。
+
+* 创建与切换分支
+
+  ```bash
+  git checkout -b dev #创建并切换
+  ```
+
+  git checkout 命令加上 -b 参数表示创建并切换，相当于下面两条命令
+
+  ```bash
+  git branch dev
+  git checkout dev
+  ```
+  切换分支后可以使用 add 和 commit 提交更改到分支
+
+* 查看分支
+
+  ```bash
+  git branch #查看分支，会列出所有的分支，当前分支前面会添加一个星号
+  ```
+
+* 合并分支
+
+  需要切换到 master 分支，使用 git merge dev ，把 dev 分支上的内容合并到 master 分支上
+
+  ```bash
+  git checkout master
+  git merge dev
+  ```
+
+  git merge 命令用于合并指定分支到当前分支上。
+  
+* 删除分支
+
+  ```bash
+  git branch -d dev #删除 dev 分支。
+  ```
+
+
+
+解决冲突
+
+1. 创建分支 fenzhi1 ，在 readme.txt 添加一行内容 8888888，然后提交
+
+   ```bash
+   git checkout -b fenzhi1 #创建并切换分支 fenzhi1
+   cat readme.txt
+   vim readme.txt #添加内容
+   cat readme.txt
+   git add readme.txt
+   git commit -m "在 femzhi1 分支上添加 8888888" #分支 fenzhi1 提交更改
+   ```
+
+2. 切换到 master 分支，在 readme.txt 添加 9999999 ，然后提交
+   ```bash
+   git checkout master #创建并切换分支 master
+   cat readme.txt
+   vim readme.txt #添加内容
+   cat readme.txt
+   git add readme.txt
+   git commit -m "在 master 分支上添加 9999999" #分支 master 提交更改
+   ```
+   
+3. 合并分支，在 master 分支上合并 fenzhi1 
+
+   ```bash
+   git merge fenzhi1
+   git status
+   cat readme.txt
+   ```
+
+   Git 使用 <<<<<<< , ====== , >>>>>>> 标记出不同分支的内容
+
+   其中 <<<<<<<HEAD 指主分支修改的内容，>>>>>>>fenzhi1 指 fenzhi1 上修改的内容                              
+
+   使用 git log 查看分支合并情况
+
+
+
+分支管理策略
+
+​		通常合并分支时，git 一般使用 “Fast forward” 模式，在这种模式下，删除分支后，会丢掉分支信息。
+
+​		可以使用参数 `---no-ff  ` 来禁用 “Fast forward” 模式
+
+1. 创建并切换一个 dev 分支
+
+2. 修改并提交 dev 分支 readme.txt 内容
+
+3. 切回主分支(master)
+
+4. 合并dev分支，使用命令 git merge --no-ff -m "注释" dev
+
+5. 查看记录历史
+
+   ```bash
+   git checkout -b dev
+   vim readme.txt
+   git add readme.txt
+   git commit -m "add merge"
+   git checkout master
+   git merge --no-ff -m "merge with no-ff" dev #合并dev分支 --no-ff 表示禁用 fast forward
+   git branch -d dev #删除 dev 分支
+   git branch
+   git log --graph --pretty=oneline --abbrev-commit
+   ```
+
+   
+
+**分支策略**：首先 master 主分支应该是非常稳定的，也就是来发布新版本，一般情况不允许在上面干活，干活一般情况下在新建的 dev 分支上干活，干完后，比如要发布，或者说 dev 分支代码稳定后可以合并到主分支 master 上来。
